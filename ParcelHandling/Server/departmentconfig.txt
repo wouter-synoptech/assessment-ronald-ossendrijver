@@ -11,10 +11,9 @@ Weight in <3,10]
 Value in [0,1000> or Authorized = True
 
 Grote Dozen
-Weight in <10,*]
+Weight in <10,*>
 Value in [0,1000> or Authorized = True
 
 Finance
-Value in [1000,*]
+Value in [1000,*>
 Authorized = False
-
