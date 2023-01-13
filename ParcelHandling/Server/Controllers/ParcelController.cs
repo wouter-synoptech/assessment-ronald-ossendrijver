@@ -1,0 +1,67 @@
+using Microsoft.AspNetCore.Mvc;
+using ParcelHandling.Shared;
+using System.Collections.Generic;
+using System.Text.Json;
+using System.Xml;
+using System.Xml.Serialization;
+
+namespace ParcelHandling.Server.Controllers
+{
+    [ApiController]
+    [Route("[controller]")]
+    public class ParcelController : ControllerBase
+    {
+        private readonly ILogger<DepartmentController> _logger;
+
+        public ParcelController(ILogger<DepartmentController> logger)
+        {
+            _logger = logger;
+        }
+
+        [HttpGet]
+        public IEnumerable<Parcel> Get(string departmentName)
+        {
+            try
+            {
+                var result = new List<Parcel>();
+
+                using (StreamReader departmentFile = new("departments.txt"))
+                {
+                    var dispatcher = SimpleDepartmentDispatcherFactory.Create(departmentFile);
+                    
+                    var department = dispatcher.Targets.FirstOrDefault(dept => dept.Name == departmentName);
+
+                    if (department != null) {
+
+                        var serializer = new XmlSerializer(typeof(Container));
+
+                        foreach (var containerFile in Directory.GetFiles("./ParcelContainers"))
+                        {
+                            using (StreamReader sr = new(containerFile))
+                            {
+                                var container = (Container?)serializer.Deserialize(sr);
+
+                                if (container != null)
+                                {
+                                    foreach (var parcel in container.Parcels)
+                                    {
+                                        if (dispatcher.DetermineTarget(parcel) == department)
+                                        {
+                                            result.Add(parcel);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                return result;
+            }
+            catch (Exception)
+            {
+                return Array.Empty<Parcel>();
+            }
+        }
+    }
+}
