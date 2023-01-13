@@ -18,14 +18,21 @@ namespace ParcelHandling.Server.Controllers
             _logger = logger;
         }
 
-        [HttpGet("departmentName")]
+        [HttpPost("{parcelId}")]
+        public async Task Post(int parcelId)
+        {
+
+        }
+
+        [HttpGet("{departmentName}")]
         public IEnumerable<Parcel> Get(string departmentName)
         {
             try
             {
                 var result = new List<Parcel>();
+                int parcelId = 0;
 
-                using (StreamReader departmentFile = new("departments.txt"))
+                using (StreamReader departmentFile = new("departmentconfig.txt"))
                 {
                     var dispatcher = SimpleDepartmentDispatcherFactory.Create(departmentFile);
                     
@@ -45,6 +52,7 @@ namespace ParcelHandling.Server.Controllers
                                 {
                                     foreach (var parcel in container.Parcels)
                                     {
+                                        parcel.Id = parcelId++;
                                         if (dispatcher.DetermineTarget(parcel) == department)
                                         {
                                             result.Add(parcel);

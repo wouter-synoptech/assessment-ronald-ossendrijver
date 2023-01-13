@@ -21,7 +21,7 @@ namespace ParcelHandling.Server.Controllers
             
             try
             {
-                using (StreamReader file = new("departments.txt"))
+                using (StreamReader file = new("departmentconfig.txt"))
                 {
                     departments = SimpleDepartmentDispatcherFactory.Create(file).Targets;
                 }

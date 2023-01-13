@@ -138,13 +138,13 @@ namespace Tests
         [TestMethod]
         public void SaveAndLoadTestDepartments()
         {
-            using (StreamWriter file1 = new("departments.txt"))
+            using (StreamWriter file1 = new("departmentconfig.txt"))
             {
                 var departmentsIn = GetTestDispatcher();
                 SimpleDepartmentDispatcherFactory.Save(file1, departmentsIn);
             }
 
-            using (StreamReader file2 = new("departments.txt"))
+            using (StreamReader file2 = new("departmentconfig.txt"))
             {
                 var departmentsOut = SimpleDepartmentDispatcherFactory.Create(file2);
                 Assert.AreEqual(4, departmentsOut.Targets.Count());

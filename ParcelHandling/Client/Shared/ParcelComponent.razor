@@ -4,10 +4,9 @@
 @if (Parcel != null)
 {
     <div class="card" style="width: 18rem;">
-        <img src="..." class="card-img-top" alt="...">
+        <img src="parcel.png" class="card-img-top" alt="Parcel">
         <div class="card-body">
             <h5 class="card-title">Parcel</h5>
-            Parcel
             <table class="table">
                 <tbody>
                     <tr>
@@ -24,12 +23,12 @@
                     </tr>
                     <tr>
                         <th scope="row">Value</th>
-                        <td>@Parcel.Value.ToString("C", CultureInfo.CurrentCulture)</td>
+                        <td>@Parcel.Value</td>
                     </tr>
                 </tbody>
             </table>
-            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-            <a href="#" class="btn btn-primary">Go somewhere</a>
+            
+            <a @onclick=Handle class="btn btn-primary">Handle!</a>
         </div>
     </div>
 }
@@ -39,4 +38,6 @@
     [Parameter]
     public Parcel? Parcel { get; set; }
 
+    [Parameter]
+    public EventCallback<MouseEventArgs> Handle { get; set; }
 }

@@ -9,6 +9,8 @@ namespace ParcelHandling.Shared
 {
     public class Parcel : IDispatchable
     {
+        public int Id { get; set; } 
+
         [XmlElement("Receipient")]
         public Recipient? Receipient { get; set; }
 
