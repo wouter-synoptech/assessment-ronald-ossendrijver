@@ -1,7 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
 using ParcelHandling.Shared;
-using System.Collections.Generic;
-using System.Text.Json;
 
 namespace ParcelHandling.Server.Controllers
 {

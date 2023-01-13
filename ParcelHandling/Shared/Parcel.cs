@@ -7,16 +7,15 @@ using System.Xml.Serialization;
 
 namespace ParcelHandling.Shared
 {
-    [XmlRoot(ElementName = "Parcel")]
     public class Parcel : IDispatchable
     {
-        [XmlElement(ElementName = "Recipient")]
-        public Recipient? Recipient { get; set; }
+        [XmlElement("Receipient")]
+        public Recipient? Receipient { get; set; }
 
-        [XmlElement(ElementName = "Weight")]
+        [XmlElement("Weight")]
         public float Weight { get; set; }
 
-        [XmlElement(ElementName = "Value")]
+        [XmlElement("Value")]
         public float Value { get; set;}
 
         public bool Authorized { get; set; }

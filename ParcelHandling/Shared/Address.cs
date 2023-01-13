@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using System.Xml.Serialization;
 
 namespace ParcelHandling.Shared
@@ -20,6 +21,11 @@ namespace ParcelHandling.Shared
 
         [XmlElement(ElementName = "City")]
         public string? City { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Street} {HouseNumber} - {PostalCode} {City}";
+        }
 
     }
 }

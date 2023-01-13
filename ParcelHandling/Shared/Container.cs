@@ -10,13 +10,13 @@ namespace ParcelHandling.Shared
     [XmlRoot(ElementName = "Container")]
     public class Container
     {
-        [XmlElement(ElementName = "Id")]
-        public string Id { get; set; }
+        [XmlElement("Id")]
+        public string? Id { get; set; }
 
-        [XmlElement(ElementName = "ShippingDate")]
+        [XmlElement("ShippingDate")]
         public DateTime ShippingDate { get; set; }
 
-        [XmlElement(ElementName = "parcels")]
-        public List<Parcel> Parcels { get; set; }
+        [XmlArray("parcels")]
+        public Parcel[]? Parcels { get; set; }
     }
 }

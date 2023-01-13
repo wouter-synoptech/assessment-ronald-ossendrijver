@@ -1,0 +1,42 @@
+﻿@using ParcelHandling.Shared;
+@using System.Globalization;
+
+@if (Parcel != null)
+{
+    <div class="card" style="width: 18rem;">
+        <img src="..." class="card-img-top" alt="...">
+        <div class="card-body">
+            <h5 class="card-title">Parcel</h5>
+            Parcel
+            <table class="table">
+                <tbody>
+                    <tr>
+                        <th scope="row">Recipient</th>
+                        <td>
+                            @Parcel.Receipient?.Name<br>
+                            @Parcel.Receipient?.Address?.Street @Parcel.Receipient?.Address?.HouseNumber<br>
+                            @Parcel.Receipient?.Address?.PostalCode @Parcel.Receipient?.Address?.City
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Weight</th>
+                        <td>@Parcel.Weight</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Value</th>
+                        <td>@Parcel.Value.ToString("C", CultureInfo.CurrentCulture)</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+            <a href="#" class="btn btn-primary">Go somewhere</a>
+        </div>
+    </div>
+}
+
+@code {
+
+    [Parameter]
+    public Parcel? Parcel { get; set; }
+
+}

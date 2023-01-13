@@ -1,7 +1,8 @@
 using ParcelHandling.Shared;
-using System.ComponentModel;
+//using System.ComponentModel;
 using System.Data;
 using System.Text.Json;
+using System.Xml.Serialization;
 using static ParcelHandling.Shared.IExpression;
 
 namespace Tests
@@ -75,10 +76,10 @@ namespace Tests
                 Address = new Address() { City = "Rotterdam", PostalCode = "1234 AB", HouseNumber = "1", Street = "Blaak" }
             };
 
-            var parcel1 = new Parcel() { Recipient = recipient, Value = 500f, Weight = 5f };
-            var parcel2 = new Parcel() { Recipient = recipient, Value = 500f, Weight = 15f };
-            var parcel3 = new Parcel() { Recipient = recipient, Value = 500f, Weight = 0.5f };
-            var parcel4 = new Parcel() { Recipient = recipient, Value = 1500f, Weight = 3f };
+            var parcel1 = new Parcel() { Receipient = recipient, Value = 500f, Weight = 5f };
+            var parcel2 = new Parcel() { Receipient = recipient, Value = 500f, Weight = 15f };
+            var parcel3 = new Parcel() { Receipient = recipient, Value = 500f, Weight = 0.5f };
+            var parcel4 = new Parcel() { Receipient = recipient, Value = 1500f, Weight = 3f };
 
             Assert.AreEqual(deptB, dispatcher.DetermineTarget(parcel1));
             Assert.AreEqual(deptC, dispatcher.DetermineTarget(parcel2));
@@ -148,6 +149,33 @@ namespace Tests
                 var departmentsOut = SimpleDepartmentDispatcherFactory.Create(file2);
                 Assert.AreEqual(4, departmentsOut.Targets.Count());
             }
+        }
+
+        [TestMethod]
+        public void ReadContainers()
+        {
+            var serializer = new XmlSerializer(typeof(Container));
+            var allParcels = new List<Parcel>();
+
+            foreach (var containerFile in Directory.GetFiles("./ParcelContainers"))
+            {
+                using (StreamReader sr = new(containerFile))
+                {
+                    var container = (Container?)serializer.Deserialize(sr);
+
+                    if (container != null)
+                    {
+                        Console.WriteLine($"Container {container.Id} - {container.ShippingDate}, #parcels: {container.Parcels.Count()}");
+                        foreach (var parcel in container.Parcels)
+                        {
+                            Console.WriteLine($"{parcel.Receipient} - {parcel.Weight} - {parcel.Value}");
+                        }
+                        allParcels.AddRange(container.Parcels);
+                    }
+                }
+            }
+
+            Assert.AreEqual(17, allParcels.Count());
         }
 
     }

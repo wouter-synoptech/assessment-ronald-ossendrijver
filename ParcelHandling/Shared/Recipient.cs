@@ -9,10 +9,15 @@ namespace ParcelHandling.Shared
 {
     public class Recipient
     {
-        [XmlElement(ElementName = "Name")]
+        [XmlElement("Name")]
         public string? Name { get; set; }
 
-        [XmlElement(ElementName = "Address")]
+        [XmlElement("Address")]
         public Address? Address { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Name} : {Address}";
+        }
     }
 }

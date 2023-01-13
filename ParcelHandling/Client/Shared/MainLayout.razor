@@ -1,17 +1,95 @@
 ﻿@inherits LayoutComponentBase
+@using ParcelHandling.Shared
+@inject HttpClient Http
 
 <div class="page">
-    <div class="sidebar">
-        <NavMenu />
+
+    <div>
+        <nav class="navbar navbar-expand-lg bg-body-tertiary">
+            <div class="container-fluid">
+
+                <a class="navbar-brand" href="#">ParcelHandling</a>
+
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+
+                        <li class="nav-item">
+                            <a @onclick=@(e => SetCurrentDepartment(null)) class="nav-link active" aria-current="page" href="#">Home</a>
+                        </li>
+                    
+                        @if (departments != null) {
+
+                            foreach (var dept in departments)
+                            {
+                                <li class="nav-item">
+                                    <a @onclick=@(e => SetCurrentDepartment(dept)) class="nav-link" href="#">@dept.Name</a>
+                                </li>
+                            }
+                        }
+
+                    </ul>
+                </div>
+            </div>
+        </nav>
     </div>
 
-    <main>
-        <div class="top-row px-4">
-            <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
-        </div>
+    <div>
+        @if (_currentDepartment != null)
+        {
+            <h1>Welcome to department @_currentDepartment.Name!</h1>
 
-        <article class="content px-4">
-            @Body
-        </article>
-    </main>
+            @if (_parcelsOfCurrentDepartment != null && _parcelsOfCurrentDepartment.Any())
+            {
+                <div>The following parcels are waiting to be handled:</div>
+                @foreach (var parcel in _parcelsOfCurrentDepartment)
+                {
+                    <ParcelComponent Parcel=parcel/>
+                }
+            }
+            else
+            {
+                <div>No parcels to be handled found.</div>
+            }
+        }
+    </div>
+
 </div>
+
+@code {
+
+    private Department[]? departments;
+
+    private Department? _currentDepartment;
+    private IEnumerable<Parcel>? _parcelsOfCurrentDepartment;
+
+    protected override async Task OnInitializedAsync()
+    {
+        departments = await Http.GetFromJsonAsync<Department[]>("Department");
+    }
+
+    private async Task SetCurrentDepartment(Department? department)
+    {
+        _currentDepartment = department;
+
+        if (department != null)
+        {
+            try
+            {
+                _parcelsOfCurrentDepartment = await Http.GetFromJsonAsync<Parcel[]>($"Parcel/{department.Name}");
+                Console.WriteLine("Number of parcels found: " + _parcelsOfCurrentDepartment?.Count());
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                _parcelsOfCurrentDepartment = Array.Empty<Parcel>();
+            }
+        }
+        else
+        {
+            _parcelsOfCurrentDepartment = Array.Empty<Parcel>();
+        }
+
+        StateHasChanged();
+    }
+}

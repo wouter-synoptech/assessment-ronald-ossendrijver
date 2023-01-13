@@ -18,7 +18,7 @@ namespace ParcelHandling.Server.Controllers
             _logger = logger;
         }
 
-        [HttpGet]
+        [HttpGet("departmentName")]
         public IEnumerable<Parcel> Get(string departmentName)
         {
             try
@@ -41,7 +41,7 @@ namespace ParcelHandling.Server.Controllers
                             {
                                 var container = (Container?)serializer.Deserialize(sr);
 
-                                if (container != null)
+                                if (container != null && container.Parcels != null)
                                 {
                                     foreach (var parcel in container.Parcels)
                                     {
@@ -55,6 +55,9 @@ namespace ParcelHandling.Server.Controllers
                         }
                     }
                 }
+
+                System.Diagnostics.Debug.Print("Parcels found: " + result.Count);
+                _logger.Log(LogLevel.Critical, "Parcels found: " + result.Count);
 
                 return result;
             }
