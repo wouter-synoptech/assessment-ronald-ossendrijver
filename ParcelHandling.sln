@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ParcelHandling.Client", "Pa
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ParcelHandling.Shared", "ParcelHandling\Shared\ParcelHandling.Shared.csproj", "{BDA66691-EEC1-418F-B895-BBB2B621DFE0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{8FD2D681-4D7D-48A0-A004-5FC2E5D4145C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParcelHandling.Tests", "Tests\ParcelHandling.Tests.csproj", "{8FD2D681-4D7D-48A0-A004-5FC2E5D4145C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
