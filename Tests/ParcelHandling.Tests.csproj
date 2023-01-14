@@ -16,6 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ParcelHandling\Server\ParcelHandling.Server.csproj" />
     <ProjectReference Include="..\ParcelHandling\Shared\ParcelHandling.Shared.csproj" />
   </ItemGroup>
 

@@ -1,3 +1,4 @@
+using ParcelHandling.Server.Managers;
 using ParcelHandling.Shared;
 //using System.ComponentModel;
 using System.Data;
@@ -141,12 +142,12 @@ namespace Tests
             using (StreamWriter file1 = new("departmentconfig.txt"))
             {
                 var departmentsIn = GetTestDispatcher();
-                SimpleDepartmentDispatcherFactory.Save(file1, departmentsIn);
+                DepartmentManager.Save(file1, departmentsIn);
             }
 
             using (StreamReader file2 = new("departmentconfig.txt"))
             {
-                var departmentsOut = SimpleDepartmentDispatcherFactory.Create(file2);
+                var departmentsOut = DepartmentManager.Create(file2);
                 Assert.AreEqual(4, departmentsOut.Targets.Count());
             }
         }

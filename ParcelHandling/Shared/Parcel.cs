@@ -9,7 +9,7 @@ namespace ParcelHandling.Shared
 {
     public class Parcel : IDispatchable
     {
-        public int Id { get; set; } 
+        public string? Id { get; set; } 
 
         [XmlElement("Receipient")]
         public Recipient? Receipient { get; set; }
@@ -20,7 +20,9 @@ namespace ParcelHandling.Shared
         [XmlElement("Value")]
         public float Value { get; set;}
 
-        public bool Authorized { get; set; }
+        public ParcelState State { get; set; }
+
+        public bool Authorized => State == ParcelState.Authorized;
 
         public IDictionary<string, object> GetCharacteristics()
         {
@@ -29,6 +31,7 @@ namespace ParcelHandling.Shared
                 { "Weight", Weight },
                 { "Value", Value },
                 { "Authorized", Authorized },
+                { "Status", State },
             };
         }
     }

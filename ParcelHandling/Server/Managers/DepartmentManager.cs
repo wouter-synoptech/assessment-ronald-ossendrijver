@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ParcelHandling.Shared;
 
-namespace ParcelHandling.Shared
+namespace ParcelHandling.Server.Managers
 {
-    public class SimpleDepartmentDispatcherFactory
+    public class DepartmentManager
     {
         /// <summary>
         /// SimpleDispatchingRuleset structure:
@@ -30,6 +31,9 @@ namespace ParcelHandling.Shared
                 var rulesetForDepartment = new SimpleAndExpression();
                 var dept = new Department() { Name = read };
 
+                read = reader.ReadLine();
+                dept.HandlingResult = Enum.Parse<ParcelState>(read);
+
                 while ((read = reader.ReadLine()) != null && read != "")
                 {
                     var rule = new SimpleOrExpression();
@@ -37,7 +41,7 @@ namespace ParcelHandling.Shared
 
                     foreach (var part in read.Split(" or "))
                     {
-                        if (part.Contains("="))
+                        if (part.Contains('='))
                         {
                             rule.AddTerm(SimpleEqualityCondition.Parse(part));
                         }
@@ -65,6 +69,7 @@ namespace ParcelHandling.Shared
             foreach (var dept in dispatcher.Targets)
             {
                 writer.WriteLine(dept.Name);
+                writer.WriteLine(dept.HandlingResult);
 
                 var rule = dispatcher.GetRule(dept);
                 if (rule != null && rule is SimpleAndExpression andExpression)

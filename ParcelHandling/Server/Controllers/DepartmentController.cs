@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using ParcelHandling.Server.Managers;
 using ParcelHandling.Shared;
 
 namespace ParcelHandling.Server.Controllers
@@ -23,7 +24,7 @@ namespace ParcelHandling.Server.Controllers
             {
                 using (StreamReader file = new("departmentconfig.txt"))
                 {
-                    departments = SimpleDepartmentDispatcherFactory.Create(file).Targets;
+                    departments = DepartmentManager.Create(file).Targets;
                 }
             }
             catch (Exception)

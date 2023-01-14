@@ -1,19 +1,24 @@
 Brieven
+Handled
 Weight in <*,1]
 Value in [0,1000> or Authorized = True
 
 Pakketjes
+Handled
 Weight in <1,3]
 Value in [0,1000> or Authorized = True
 
 Middelgrote Dozen
+Handled
 Weight in <3,10]
 Value in [0,1000> or Authorized = True
 
 Grote Dozen
+Handled
 Weight in <10,*>
 Value in [0,1000> or Authorized = True
 
 Finance
+Authorized
 Value in [1000,*>
 Authorized = False
