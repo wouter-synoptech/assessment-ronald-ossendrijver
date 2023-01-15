@@ -9,8 +9,10 @@ namespace ParcelHandling.Server.Managers
         public static void CheckForNewContainers()
         {
             int parcelId = 0;
-
             var serializer = new XmlSerializer(typeof(Container));
+
+            Directory.CreateDirectory("./Containers");
+            Directory.CreateDirectory("./Parcels");
 
             foreach (var containerFile in Directory.GetFiles("./Containers"))
             {
@@ -71,7 +73,7 @@ namespace ParcelHandling.Server.Managers
             return result;
         }
 
-        public static Parcel? GetParcel(int parcelId)
+        public static Parcel? GetParcel(string parcelId)
         {
             var parcelfile = $"./Parcels/parcel_{parcelId}.json";
             if (File.Exists(parcelfile))
@@ -82,18 +84,19 @@ namespace ParcelHandling.Server.Managers
             return null;
         }
 
-        public static void HandleParcel(int parcelId, ParcelState state)
+        /*
+        public static void UpdateParcel(string parcelId, ParcelState state)
         {
             var parcel = GetParcel(parcelId);
             if (parcel != null)
             {
-                HandleParcel(parcel, state);
+                UpdateParcel(parcel, state);
             }
         }
+        */
 
-        public static void HandleParcel(Parcel parcel, ParcelState state)
+        public static void UpdateParcel(Parcel parcel)
         {
-            parcel.State = state;
             var parcelfile = $"./Parcels/parcel_{parcel.Id}.json";
             File.WriteAllText(parcelfile, JsonSerializer.Serialize(parcel));
         }

@@ -19,10 +19,10 @@ namespace ParcelHandling.Server.Controllers
             _logger = logger;
         }
 
-        [HttpPost("{parcelId}/{parcelState}")]
-        public void Post(int parcelId, ParcelState parcelState)
+        [HttpPut]
+        public void Put(Parcel parcel)
         {
-            ParcelManager.HandleParcel(parcelId, parcelState);
+            ParcelManager.UpdateParcel(parcel);
         }
 
         [HttpGet("{departmentName}")]
