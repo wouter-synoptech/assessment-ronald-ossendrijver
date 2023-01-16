@@ -45,7 +45,7 @@
 
                 @foreach (var parcel in _parcelsOfCurrentDepartment)
                 {
-                    <ParcelComponent Parcel=parcel/>
+                    <ParcelComponent Parcel=parcel Actions=_currentDepartment.Actions OnHandled=RefreshParcelsOfCurrentDepartment />
                 }
 
             </div>
@@ -61,6 +61,9 @@
         <p>
             Choose a department from the menu to browse parcels waiting to be handled.
         </p>
+        <p>
+            Click <a @onclick=@(e => ResetApplication()) class="btn btn-danger">Here</a> if you wish to reset the system (for demo purposes).
+        </p>
     }
 
 </div>
@@ -68,7 +71,6 @@
 @code {
 
     private Department[]? departments;
-
     private Department? _currentDepartment;
     private IEnumerable<Parcel>? _parcelsOfCurrentDepartment;
 
@@ -83,24 +85,6 @@
         await RefreshParcelsOfCurrentDepartment();
     }
 
-    private async Task Handle(Parcel parcel, ParcelState state)
-    {
-        if (parcel != null)
-        {
-            try
-            {
-                parcel.State = state;
-                await Http.PutAsJsonAsync($"Parcel", parcel);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-            }
-
-            await RefreshParcelsOfCurrentDepartment();
-        }
-    }
-
     private async Task RefreshParcelsOfCurrentDepartment()
     {
         if (_currentDepartment != null)
@@ -110,9 +94,9 @@
                 _parcelsOfCurrentDepartment = await Http.GetFromJsonAsync<Parcel[]>($"Parcel/{_currentDepartment.Name}");
 
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                Console.WriteLine(ex);
+                Console.WriteLine("There was an issue retriving parcels");
                 _parcelsOfCurrentDepartment = Array.Empty<Parcel>();
             }
         }
@@ -122,5 +106,18 @@
         }
 
         StateHasChanged();
+    }
+
+    private async Task ResetApplication()
+    {
+        try
+        {
+            await Http.DeleteAsync("Parcel");
+        }
+        catch (Exception)
+        {
+            Console.WriteLine("There was an issue resetting the application");
+            _parcelsOfCurrentDepartment = Array.Empty<Parcel>();
+        }
     }
 }

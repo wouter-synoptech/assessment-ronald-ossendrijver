@@ -100,5 +100,13 @@ namespace ParcelHandling.Server.Managers
             var parcelfile = $"./Parcels/parcel_{parcel.Id}.json";
             File.WriteAllText(parcelfile, JsonSerializer.Serialize(parcel));
         }
+
+        public static void ResetAllParcels()
+        {
+            foreach (var filename in Directory.GetFiles("./Parcels"))
+            {
+                File.Delete(filename);
+            }
+        }
     }
 }

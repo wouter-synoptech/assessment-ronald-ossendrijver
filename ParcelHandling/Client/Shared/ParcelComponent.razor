@@ -1,12 +1,13 @@
 ﻿@using ParcelHandling.Shared;
 @using System.Globalization;
+@inject HttpClient Http
 
 @if (Parcel != null)
 {
     <div class="card" style="width: 18rem;">
         <img src="parcel.png" class="card-img-top" alt="Parcel">
         <div class="card-body">
-            <h5 class="card-title">Parcel</h5>
+            <h5 class="card-title">Parcel <strong>@Parcel.Id</strong></h5>
             <table class="table">
                 <tbody>
                     <tr>
@@ -27,8 +28,15 @@
                     </tr>
                 </tbody>
             </table>
-            
-            <a @onclick=Handle class="btn btn-primary">Handle!</a>
+
+            @if (Actions != null) {
+
+                foreach (var action in Actions) {
+
+                    <a @onclick=@(e => Handle(action.Result)) class="btn btn-primary">@action.Action</a>
+                }
+            }
+
         </div>
     </div>
 }
@@ -39,5 +47,26 @@
     public Parcel? Parcel { get; set; }
 
     [Parameter]
-    public EventCallback<MouseEventArgs> Handle { get; set; }
+    public IEnumerable<HandlingAction>? Actions { get; set; }
+
+    [Parameter]
+    public EventCallback OnHandled { get; set; }
+
+    private async Task Handle(ParcelState state)
+    {
+        if (Parcel != null)
+        {
+            try
+            {
+                Parcel.State = state;
+                await Http.PutAsJsonAsync($"Parcel", Parcel);
+            }
+            catch (Exception)
+            {
+                Console.WriteLine("An error occured while updating a parcel");
+            }
+
+            await OnHandled.InvokeAsync();
+        }
+    }
 }

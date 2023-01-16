@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 
@@ -22,7 +23,11 @@ namespace ParcelHandling.Shared
 
         public ParcelState State { get; set; }
 
+        [JsonIgnore]
         public bool Authorized => State == ParcelState.Authorized;
+
+        [JsonIgnore]
+        public bool Handled => State == ParcelState.Handled;
 
         public IDictionary<string, object> GetCharacteristics()
         {
@@ -31,6 +36,7 @@ namespace ParcelHandling.Shared
                 { "Weight", Weight },
                 { "Value", Value },
                 { "Authorized", Authorized },
+                { "Handled", Handled },
                 { "Status", State },
             };
         }

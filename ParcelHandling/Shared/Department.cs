@@ -6,6 +6,6 @@ namespace ParcelHandling.Shared
     {
         public string? Name { get; set; }
 
-        public ParcelState HandlingResult { get; set; }
+        public List<HandlingAction> Actions { get; set; } = new();
     }
 }

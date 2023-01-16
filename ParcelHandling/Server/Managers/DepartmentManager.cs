@@ -23,43 +23,59 @@ namespace ParcelHandling.Server.Managers
 
         public static Dispatcher<Department> Create(TextReader reader)
         {
-            var result = new Dispatcher<Department>();
-
-            string? read;
-            while ((read = reader.ReadLine()) != null)
+            try
             {
-                var rulesetForDepartment = new SimpleAndExpression();
-                var dept = new Department() { Name = read };
+                var result = new Dispatcher<Department>();
 
-                read = reader.ReadLine();
-                dept.HandlingResult = Enum.Parse<ParcelState>(read);
-
-                while ((read = reader.ReadLine()) != null && read != "")
+                string? read;
+                while ((read = reader.ReadLine()) != null)
                 {
-                    var rule = new SimpleOrExpression();
-                    rulesetForDepartment.AddTerm(rule);
+                    var rulesetForDepartment = new SimpleAndExpression();
+                    var dept = new Department() { Name = read };
 
-                    foreach (var part in read.Split(" or "))
+                    read = reader.ReadLine();
+                    if (read.Length > 0)
                     {
-                        if (part.Contains('='))
+                        var handlingActions = read.Split(',');
+                        foreach (var action in handlingActions)
                         {
-                            rule.AddTerm(SimpleEqualityCondition.Parse(part));
-                        }
-                        else if (part.Contains(" in "))
-                        {
-                            rule.AddTerm(SimpleIntervalCondition.Parse(part));
-                        }
-                        else
-                        {
-                            throw new ArgumentException($"Illegal expression: {part}");
+                            var actionElement = action.Split("->");
+                            var handlingAction = new HandlingAction() { Action = actionElement[0].Trim(), Result = Enum.Parse<ParcelState>(actionElement[1]) };
+                            dept.Actions.Add(handlingAction);
                         }
                     }
+
+                    while ((read = reader.ReadLine()) != null && read != "")
+                    {
+                        var rule = new SimpleOrExpression();
+                        rulesetForDepartment.AddTerm(rule);
+
+                        foreach (var part in read.Split(" or "))
+                        {
+                            if (part.Contains('='))
+                            {
+                                rule.AddTerm(SimpleEqualityCondition.Parse(part));
+                            }
+                            else if (part.Contains(" in "))
+                            {
+                                rule.AddTerm(SimpleIntervalCondition.Parse(part));
+                            }
+                            else
+                            {
+                                throw new ArgumentException($"Illegal expression: {part}");
+                            }
+                        }
+                    }
+
+                    result.AddDispatchRule(dept, rulesetForDepartment);
                 }
 
-                result.AddDispatchRule(dept, rulesetForDepartment);
+                return result;
             }
-
-            return result;
+            catch (Exception ex)
+            {
+                throw new ArgumentException("Invalid department definition", ex);
+            }
         }
 
         public static IEnumerable<Department> Save(TextWriter writer, Dispatcher<Department> dispatcher)
@@ -69,7 +85,8 @@ namespace ParcelHandling.Server.Managers
             foreach (var dept in dispatcher.Targets)
             {
                 writer.WriteLine(dept.Name);
-                writer.WriteLine(dept.HandlingResult);
+
+                writer.WriteLine(string.Join(", ", dept.Actions.Select(action => $"{action.Action} -> {action.Result}")));
 
                 var rule = dispatcher.GetRule(dept);
                 if (rule != null && rule is SimpleAndExpression andExpression)

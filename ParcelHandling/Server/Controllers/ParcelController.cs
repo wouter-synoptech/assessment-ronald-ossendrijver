@@ -30,5 +30,12 @@ namespace ParcelHandling.Server.Controllers
         {
             return ParcelManager.GetParcels(departmentName);
         }
+
+        [HttpDelete]
+        public void Delete()
+        {
+            ParcelManager.ResetAllParcels();
+        }
+
     }
 }
