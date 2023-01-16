@@ -20,4 +20,10 @@
     <ProjectReference Include="..\ParcelHandling\Shared\ParcelHandling.Shared.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Containers\Container_68465468.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

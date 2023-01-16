@@ -179,5 +179,15 @@ namespace Tests
             Assert.AreEqual(17, allParcels.Count());
         }
 
+        [TestMethod]
+        public void GetParcels()
+        {
+            var department = DepartmentManager.GetDepartments().FirstOrDefault();
+            Assert.IsNotNull(department);
+
+            var parcelsOfDepartment = ParcelManager.GetParcels(department.Name);
+            Assert.AreEqual(5, parcelsOfDepartment.Count());
+        }
+
     }
 }

@@ -89,6 +89,23 @@ namespace ParcelHandling.Server.Managers
             return result;
         }
 
+        public static IEnumerable<Department> GetDepartments()
+        {
+            IEnumerable<Department> result = new List<Department>();
 
+            try
+            {
+                using (StreamReader file = new("departmentconfig.txt"))
+                {
+                    result = Create(file).Targets;
+                }
+            }
+            catch (Exception)
+            {
+                //Do nothing
+            }
+
+            return result;
+        }
     }
 }

@@ -58,7 +58,7 @@ namespace ParcelHandling.Server.Managers
 
                     foreach (var parcelfile in Directory.GetFiles("./Parcels", "parcel*"))
                     {
-                        var parcel = JsonSerializer.Deserialize<Parcel>(parcelfile);
+                        var parcel = JsonSerializer.Deserialize<Parcel>(File.ReadAllText(parcelfile));
 
                         if (parcel != null && dispatcher.DetermineTarget(parcel) == department)
                         {

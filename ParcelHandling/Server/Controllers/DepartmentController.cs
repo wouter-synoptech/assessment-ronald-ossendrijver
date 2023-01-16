@@ -18,21 +18,7 @@ namespace ParcelHandling.Server.Controllers
         [HttpGet]
         public IEnumerable<Department> Get()
         {
-            IEnumerable<Department> departments = new List<Department>();
-            
-            try
-            {
-                using (StreamReader file = new("departmentconfig.txt"))
-                {
-                    departments = DepartmentManager.Create(file).Targets;
-                }
-            }
-            catch (Exception)
-            {
-                departments = Array.Empty<Department>();
-            }
-
-            return departments;
+            return DepartmentManager.GetDepartments();
         }
     }
 }
