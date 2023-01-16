@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
+﻿using System.Text.Json.Serialization;
 using System.Xml.Serialization;
 
 namespace ParcelHandling.Shared
 {
     public class Parcel : IDispatchable
     {
-        public string? Id { get; set; } 
+        public string? Id { get; set; }
 
         [XmlElement("Receipient")]
         public Recipient? Receipient { get; set; }
@@ -19,7 +14,7 @@ namespace ParcelHandling.Shared
         public float Weight { get; set; }
 
         [XmlElement("Value")]
-        public float Value { get; set;}
+        public float Value { get; set; }
 
         public ParcelState State { get; set; }
 

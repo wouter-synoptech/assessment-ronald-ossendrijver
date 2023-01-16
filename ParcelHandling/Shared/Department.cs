@@ -1,11 +1,9 @@
-using Microsoft.VisualBasic;
-
 namespace ParcelHandling.Shared
 {
-    public class Department : IDispatchTarget
+    public class Department
     {
         public string? Name { get; set; }
 
-        public List<HandlingAction> Actions { get; set; } = new();
+        public List<ParcelAction> Actions { get; set; } = new();
     }
 }

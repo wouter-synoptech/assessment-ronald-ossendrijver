@@ -26,11 +26,11 @@
 
     public class SimpleIntervalCondition : IExpression
     {
-        public string Variable {  get; set; }
+        public string Variable { get; set; }
 
         public Interval Interval { get; set; }
 
-        public SimpleIntervalCondition(string variable, IComparable? lowerBound, bool includeLowerBound, IComparable? upperBound, bool includeUpperBound) 
+        public SimpleIntervalCondition(string variable, IComparable? lowerBound, bool includeLowerBound, IComparable? upperBound, bool includeUpperBound)
             : this(variable, new Interval(lowerBound, includeLowerBound, upperBound, includeUpperBound))
         {
         }
@@ -102,8 +102,8 @@
             return $"{Variable} = {Value}";
         }
 
-        
+
     }
 
-    
+
 }

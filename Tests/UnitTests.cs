@@ -1,15 +1,12 @@
 using ParcelHandling.Server.Managers;
 using ParcelHandling.Shared;
 //using System.ComponentModel;
-using System.Data;
-using System.Text.Json;
 using System.Xml.Serialization;
-using static ParcelHandling.Shared.IExpression;
 
 namespace Tests
 {
     [TestClass]
-    public class UnitTest1
+    public class UnitTests
     {
         public Dispatcher<Department> GetTestDispatcher()
         {
@@ -27,7 +24,7 @@ namespace Tests
             ruleDepartmentA.AddTerm(ruleNotHandled);
             ruleDepartmentA.AddTerm(ruleDepartmentAPart1);
             ruleDepartmentA.AddTerm(ruleDepartmentAPart2);
-            var depAactions = new List<HandlingAction>{ new HandlingAction() { Action = "Handle", Result = ParcelState.Handled } };
+            var depAactions = new List<ParcelAction> { new ParcelAction() { Action = "Handle", Result = ParcelState.Handled } };
             var depA = new Department() { Name = "A", Actions = depAactions };
             result.AddDispatchRule(depA, ruleDepartmentA);
 
@@ -40,7 +37,7 @@ namespace Tests
             ruleDepartmentB.AddTerm(ruleNotHandled);
             ruleDepartmentB.AddTerm(ruleDepartmentBPart1);
             ruleDepartmentB.AddTerm(ruleDepartmentBPart2);
-            var depBactions = new List<HandlingAction> { new HandlingAction() { Action = "Handle", Result = ParcelState.Handled } };
+            var depBactions = new List<ParcelAction> { new ParcelAction() { Action = "Handle", Result = ParcelState.Handled } };
             var depB = new Department() { Name = "B", Actions = depBactions };
             result.AddDispatchRule(depB, ruleDepartmentB);
 
@@ -53,7 +50,7 @@ namespace Tests
             ruleDepartmentC.AddTerm(ruleNotHandled);
             ruleDepartmentC.AddTerm(ruleDepartmentCPart1);
             ruleDepartmentC.AddTerm(ruleDepartmentCPart2);
-            var depCactions = new List<HandlingAction> { new HandlingAction() { Action = "Handle", Result = ParcelState.Handled } };
+            var depCactions = new List<ParcelAction> { new ParcelAction() { Action = "Handle", Result = ParcelState.Handled } };
             var depC = new Department() { Name = "C", Actions = depCactions };
             result.AddDispatchRule(depC, ruleDepartmentC);
 
@@ -65,7 +62,7 @@ namespace Tests
             ruleDepartmentF.AddTerm(ruleNotHandled);
             ruleDepartmentF.AddTerm(ruleDepartmentFPart1);
             ruleDepartmentF.AddTerm(ruleDepartmentFPart2);
-            var depFactions = new List<HandlingAction> { new HandlingAction() { Action = "Authorize", Result = ParcelState.Authorized } };
+            var depFactions = new List<ParcelAction> { new ParcelAction() { Action = "Authorize", Result = ParcelState.Authorized } };
             var depF = new Department() { Name = "F", Actions = depFactions };
             result.AddDispatchRule(depF, ruleDepartmentF);
 
@@ -132,7 +129,7 @@ namespace Tests
         }
 
         [TestMethod]
-        public void TestSimpleIntervalCondition()
+        public void TestIntervalParsing()
         {
             var condition = SimpleIntervalCondition.Parse("Test in <9,10]");
             var values1 = new Dictionary<string, object>() { ["Test"] = 10f };
@@ -197,6 +194,14 @@ namespace Tests
             Assert.IsNotNull(department);
 
             var parcelsOfDepartment = ParcelManager.GetParcels(department.Name);
+        }
+
+        [TestMethod]
+        public void TestIntervals()
+        {
+            var a = new Interval(0, true, 10, false);
+            Assert.IsTrue(a.Contains(5));
+            Assert.IsFalse(a.Contains(5f));
         }
 
     }

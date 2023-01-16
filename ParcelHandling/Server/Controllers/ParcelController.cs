@@ -1,10 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using ParcelHandling.Server.Managers;
 using ParcelHandling.Shared;
-using System.Collections.Generic;
-using System.Text.Json;
-using System.Xml;
-using System.Xml.Serialization;
 
 namespace ParcelHandling.Server.Controllers
 {

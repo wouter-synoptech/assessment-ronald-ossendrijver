@@ -1,6 +1,4 @@
-﻿using System.Text.Json.Serialization;
-using System.Text.Json;
-using System.Globalization;
+﻿using System.Globalization;
 
 namespace ParcelHandling.Shared
 {
@@ -62,7 +60,7 @@ namespace ParcelHandling.Shared
                     }
                 }
             }
-            
+
             return result;
         }
 
@@ -85,9 +83,9 @@ namespace ParcelHandling.Shared
             }
 
             return new Interval(
-                part1[1] == '*' ? null : Converter.Convert(part1[1..]), 
+                part1[1] == '*' ? null : Converter.Convert(part1[1..]),
                 part1[0] == '[',
-                part2[^2] == '*' ? null : Converter.Convert(part2[..^1]), 
+                part2[^2] == '*' ? null : Converter.Convert(part2[..^1]),
                 part2[^1] == ']');
 
         }
@@ -99,5 +97,5 @@ namespace ParcelHandling.Shared
             return $"{IntervalOpenChar}{minValueToDisplay},{maxValueToDisplay}{IntervalCloseChar}";
         }
     }
-        
+
 }

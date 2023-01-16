@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ParcelHandling.Shared
+﻿namespace ParcelHandling.Shared
 {
-    public class HandlingAction
+    /// <summary>
+    /// Definition of a Handling action that can be performed on a parcel, e.g. Authorizing a parcel.
+    /// </summary>
+    public class ParcelAction
     {
         public string? Action { get; set; }
 

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ParcelHandling.Shared;
+﻿using ParcelHandling.Shared;
 
 namespace ParcelHandling.Server.Managers
 {
@@ -34,13 +29,13 @@ namespace ParcelHandling.Server.Managers
                     var dept = new Department() { Name = read };
 
                     read = reader.ReadLine();
-                    if (read.Length > 0)
+                    if (read != null && read.Length > 0)
                     {
                         var handlingActions = read.Split(',');
                         foreach (var action in handlingActions)
                         {
                             var actionElement = action.Split("->");
-                            var handlingAction = new HandlingAction() { Action = actionElement[0].Trim(), Result = Enum.Parse<ParcelState>(actionElement[1]) };
+                            var handlingAction = new ParcelAction() { Action = actionElement[0].Trim(), Result = Enum.Parse<ParcelState>(actionElement[1]) };
                             dept.Actions.Add(handlingAction);
                         }
                     }
