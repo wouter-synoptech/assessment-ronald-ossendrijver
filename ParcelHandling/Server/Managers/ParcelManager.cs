@@ -11,13 +11,8 @@ namespace ParcelHandling.Server.Managers
         /// </summary>
         public static void CheckAndHandleNewContainers(IConfiguration configuration)
         {
-            var containerFolder = configuration?["ContainerFolder"];
-
-            if (containerFolder == null) throw new ArgumentException("Container folder not configured");
-
-            var parcelFolder = configuration?["ParcelFolder"];
-
-            if (parcelFolder == null) throw new ArgumentException("Parcel folder not configured");
+            var containerFolder = AppManager.GetConfiguredPath(configuration, "ContainerFolder");
+            var parcelFolder = AppManager.GetConfiguredPath(configuration, "ParcelFolder");
 
             Directory.CreateDirectory(containerFolder);
             Directory.CreateDirectory(parcelFolder);
@@ -30,20 +25,18 @@ namespace ParcelHandling.Server.Managers
 
         private static void ReadContainer(string containerFile, string parcelFolder)
         {
-            using (StreamReader sr = new(containerFile))
+            using StreamReader sr = new(containerFile);
+            var serializer = new XmlSerializer(typeof(Container));
+            var container = (Container?)serializer.Deserialize(sr);
+
+            if (container != null)
             {
-                var serializer = new XmlSerializer(typeof(Container));
-                var container = (Container?)serializer.Deserialize(sr);
+                var containerfile = $"{parcelFolder}/container_{container.Id}.json";
 
-                if (container != null)
+                if (!File.Exists(containerfile))
                 {
-                    var containerfile = $"{parcelFolder}/container_{container.Id}.json";
-
-                    if (!File.Exists(containerfile))
-                    {
-                        File.WriteAllText(containerfile, JsonSerializer.Serialize(container));
-                        ExtractParcelsFromContainer(container, parcelFolder);
-                    }
+                    File.WriteAllText(containerfile, JsonSerializer.Serialize(container));
+                    ExtractParcelsFromContainer(container, parcelFolder);
                 }
             }
         }
@@ -66,18 +59,14 @@ namespace ParcelHandling.Server.Managers
 
         public static IEnumerable<Parcel> GetParcels(string departmentName, IConfiguration configuration)
         {
-            var departmentConfig = configuration?["DepartmentConfig"];
-            if (departmentConfig == null) throw new ArgumentException("Department definition file not configured");
-            if (!File.Exists(departmentConfig)) throw new ArgumentException("Departments not defined");
-
-            var parcelFolder = configuration?["ParcelFolder"];
-
-            if (parcelFolder == null) throw new ArgumentException("Parcel folder not configured");
-
             var result = new List<Parcel>();
 
-            using (StreamReader departmentFile = new(departmentConfig))
+            if (configuration != null)
             {
+                var departmentConfig = AppManager.GetConfiguredPath(configuration, "DepartmentConfig");
+                var parcelFolder = AppManager.GetConfiguredPath(configuration, "ParcelFolder");
+
+                using StreamReader departmentFile = new(departmentConfig);
                 var dispatcher = DepartmentManager.Create(departmentFile);
                 var department = dispatcher.Targets.FirstOrDefault(dept => dept.Name == departmentName);
 
@@ -102,22 +91,20 @@ namespace ParcelHandling.Server.Managers
 
         public static void UpdateParcel(Parcel parcel, IConfiguration configuration)
         {
-            var parcelFolder = configuration?["ParcelFolder"];
-            if (parcelFolder == null) throw new ArgumentException("Parcel folder not configured");
-
+            var parcelFolder = AppManager.GetConfiguredPath(configuration, "ParcelFolder");
             var parcelfile = $"{parcelFolder}/parcel_{parcel.Id}.json";
             File.WriteAllText(parcelfile, JsonSerializer.Serialize(parcel));
         }
 
         public static void DeleteAllParcels(IConfiguration configuration)
         {
-            var parcelFolder = configuration?["ParcelFolder"];
-            if (parcelFolder == null) throw new ArgumentException("Parcel folder not configured");
-
+            var parcelFolder = AppManager.GetConfiguredPath(configuration, "ParcelFolder");
             foreach (var filename in Directory.GetFiles(parcelFolder))
             {
                 File.Delete(filename);
             }
         }
+
+
     }
 }

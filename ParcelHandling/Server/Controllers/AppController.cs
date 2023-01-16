@@ -1,27 +1,25 @@
 using Microsoft.AspNetCore.Mvc;
 using ParcelHandling.Server.Managers;
-using ParcelHandling.Shared;
-
 
 namespace ParcelHandling.Server.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class DepartmentController : ControllerBase
+    public class AppController : ControllerBase
     {
         private readonly ILogger<DepartmentController> _logger;
         private readonly IConfiguration _configuration;
 
-        public DepartmentController(IConfiguration configuration, ILogger<DepartmentController> logger)
+        public AppController(IConfiguration configuration, ILogger<DepartmentController> logger)
         {
             _logger = logger;
             _configuration = configuration;
         }
 
-        [HttpGet]
-        public IEnumerable<Department> Get()
+        [HttpDelete]
+        public void Delete()
         {
-            return DepartmentManager.GetDepartments(_configuration);
+            ParcelManager.DeleteAllParcels(_configuration);
         }
     }
 }

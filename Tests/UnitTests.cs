@@ -85,17 +85,13 @@ namespace Tests
         [TestMethod]
         public void SaveAndLoadTestDepartments()
         {
-            using (StreamWriter file1 = new("departmentconfig.txt"))
-            {
-                var departmentsIn = GetTestDispatcher();
-                DepartmentManager.Save(file1, departmentsIn);
-            }
+            using StreamWriter file1 = new("departmentconfig.txt");
+            var departmentsIn = GetTestDispatcher();
+            DepartmentManager.Save(file1, departmentsIn);
 
-            using (StreamReader file2 = new("departmentconfig.txt"))
-            {
-                var departmentsOut = DepartmentManager.Create(file2);
-                Assert.AreEqual(4, departmentsOut.Targets.Count());
-            }
+            using StreamReader file2 = new("departmentconfig.txt");
+            var departmentsOut = DepartmentManager.Create(file2);
+            Assert.AreEqual(4, departmentsOut.Targets.Count());
         }
 
         [TestMethod]
@@ -106,18 +102,16 @@ namespace Tests
 
             foreach (var containerFile in Directory.GetFiles("./ParcelContainers"))
             {
-                using (StreamReader sr = new(containerFile))
-                {
-                    var container = (Container?)serializer.Deserialize(sr);
+                using StreamReader sr = new(containerFile);
+                var container = (Container?)serializer.Deserialize(sr);
 
-                    if (container != null && container.Parcels != null)
-                    {
-                        allParcels.AddRange(container.Parcels);
-                    }
+                if (container != null && container.Parcels != null)
+                {
+                    allParcels.AddRange(container.Parcels);
                 }
             }
 
-            Assert.AreEqual(17, allParcels.Count());
+            Assert.AreEqual(17, allParcels.Count);
         }
 
         [TestMethod]
@@ -136,7 +130,7 @@ namespace Tests
             Assert.IsFalse(b.Contains(10f));
         }
 
-        private Dispatcher<Department> GetTestDispatcher()
+        private static Dispatcher<Department> GetTestDispatcher()
         {
             var result = new Dispatcher<Department>();
 

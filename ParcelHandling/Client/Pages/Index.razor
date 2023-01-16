@@ -14,9 +14,9 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
 
-                @if (departments != null) {
-
-                    foreach (var dept in departments)
+                @if (_departments != null)
+                {
+                    foreach (var dept in _departments)
                     {
                         <li class="nav-item">
                             <a @onclick=@(e => SetCurrentDepartment(dept)) class="nav-link" href="#">@dept.Name</a>
@@ -61,6 +61,8 @@
         <p>
             Choose a department from the menu to browse parcels waiting to be handled.
         </p>
+
+        <h1>Demo</h1>
         <p>
             Click <a @onclick=@(e => ResetApplication()) class="btn btn-danger">Here</a> if you wish to reset the system (for demo purposes).
         </p>
@@ -70,13 +72,20 @@
 
 @code {
 
-    private Department[]? departments;
+    private Department[]? _departments;
     private Department? _currentDepartment;
     private IEnumerable<Parcel>? _parcelsOfCurrentDepartment;
 
     protected override async Task OnInitializedAsync()
     {
-        departments = await Http.GetFromJsonAsync<Department[]>("Department");
+        try
+        {
+            _departments = await Http.GetFromJsonAsync<Department[]>("Department");
+        }
+        catch (Exception)
+        {
+            _departments = Array.Empty<Department>();
+        }
     }
 
     private async Task SetCurrentDepartment(Department? department)
@@ -92,7 +101,6 @@
             try
             {
                 _parcelsOfCurrentDepartment = await Http.GetFromJsonAsync<Parcel[]>($"Parcel/{_currentDepartment.Name}");
-
             }
             catch (Exception)
             {
@@ -112,7 +120,7 @@
     {
         try
         {
-            await Http.DeleteAsync("Parcel");
+            await Http.DeleteAsync("App");
         }
         catch (Exception)
         {

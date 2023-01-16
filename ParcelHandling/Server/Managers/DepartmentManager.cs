@@ -127,21 +127,16 @@ namespace ParcelHandling.Server.Managers
 
         public static IEnumerable<Department> GetDepartments(IConfiguration configuration)
         {
-            var departmentConfig = configuration?["DepartmentConfig"];
-            if (departmentConfig == null) throw new ArgumentException("Department definition file not configured");
-            if (!File.Exists(departmentConfig)) throw new ArgumentException("Departments not defined");
+            var departmentConfigFilename = AppManager.GetConfiguredPath(configuration, "DepartmentConfig");
+
+            if (!File.Exists(departmentConfigFilename)) throw new ArgumentException("Departments not defined");
 
             IEnumerable<Department> result = new List<Department>();
 
             try
             {
-                if (File.Exists(departmentConfig))
-                {
-                    using (StreamReader file = new(departmentConfig))
-                    {
-                        result = Create(file).Targets;
-                    }
-                }
+                using StreamReader file = new(departmentConfigFilename);
+                result = Create(file).Targets;
             }
             catch (Exception)
             {

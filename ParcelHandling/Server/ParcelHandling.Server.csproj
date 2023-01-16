@@ -19,5 +19,14 @@
     <Folder Include="Parcels\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Containers\Container_68465468.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="departmentconfig.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 
 </Project>
