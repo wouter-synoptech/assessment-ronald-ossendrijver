@@ -1,6 +1,9 @@
 ﻿namespace ParcelHandling.Shared
 {
-    public class SimpleAndExpression : IExpression
+    /// <summary>
+    /// Represents the expression: x1 && x2 && ..
+    /// </summary>
+    public class AndExpression : IExpression
     {
         public List<IExpression> Terms { get; set; } = new();
 
@@ -12,7 +15,10 @@
         public bool Evaluate(IDictionary<string, object> values) => Terms.All(term => term.Evaluate(values));
     }
 
-    public class SimpleOrExpression : IExpression
+    /// <summary>
+    /// Represents the expression: x1 || x2 || ..
+    /// </summary>
+    public class OrExpression : IExpression
     {
         public List<IExpression> Terms { get; set; } = new();
 
@@ -24,18 +30,21 @@
         public bool Evaluate(IDictionary<string, object> values) => Terms.Any(term => term.Evaluate(values));
     }
 
-    public class SimpleIntervalCondition : IExpression
+    /// <summary>
+    /// Represents the expression that the value of a Variable should be contained by an Interval
+    /// </summary>
+    public class IntervalCondition : IExpression
     {
         public string Variable { get; set; }
 
         public Interval Interval { get; set; }
 
-        public SimpleIntervalCondition(string variable, IComparable? lowerBound, bool includeLowerBound, IComparable? upperBound, bool includeUpperBound)
+        public IntervalCondition(string variable, IComparable? lowerBound, bool includeLowerBound, IComparable? upperBound, bool includeUpperBound)
             : this(variable, new Interval(lowerBound, includeLowerBound, upperBound, includeUpperBound))
         {
         }
 
-        public SimpleIntervalCondition(string variable, Interval interval)
+        public IntervalCondition(string variable, Interval interval)
         {
             Variable = variable;
             Interval = interval;
@@ -46,13 +55,13 @@
             return values.TryGetValue(Variable, out object? value) && Interval.Contains(value);
         }
 
-        public static SimpleIntervalCondition Parse(string text)
+        public static IntervalCondition Parse(string text)
         {
             var parts = text.Split("in");
 
             if (parts.Length == 2)
             {
-                return new SimpleIntervalCondition(parts[0].Trim(), Interval.Parse(parts[1].Trim()));
+                return new IntervalCondition(parts[0].Trim(), Interval.Parse(parts[1].Trim()));
             }
             else
             {
@@ -66,13 +75,16 @@
         }
     }
 
-    public class SimpleEqualityCondition : IExpression
+    /// <summary>
+    /// Represents the expression that the value of a Variable should equal to the specified Value
+    /// </summary>
+    public class EqualityCondition : IExpression
     {
         public string Variable { get; set; }
 
         public object Value { get; set; }
 
-        public SimpleEqualityCondition(string variable, object value)
+        public EqualityCondition(string variable, object value)
         {
             Variable = variable;
             Value = value;
@@ -83,13 +95,13 @@
             return values.TryGetValue(Variable, out object? value) && Value.Equals(value);
         }
 
-        public static SimpleEqualityCondition Parse(string text)
+        public static EqualityCondition Parse(string text)
         {
             var parts = text.Split("=");
 
             if (parts.Length == 2)
             {
-                return new SimpleEqualityCondition(parts[0].Trim(), Converter.Convert(parts[1].Trim()));
+                return new EqualityCondition(parts[0].Trim(), Converter.Convert(parts[1].Trim()));
             }
             else
             {
@@ -101,9 +113,5 @@
         {
             return $"{Variable} = {Value}";
         }
-
-
     }
-
-
 }

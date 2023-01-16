@@ -9,28 +9,30 @@ namespace ParcelHandling.Server.Controllers
     public class ParcelController : ControllerBase
     {
         private readonly ILogger<DepartmentController> _logger;
+        private readonly IConfiguration _configuration;
 
-        public ParcelController(ILogger<DepartmentController> logger)
+        public ParcelController(IConfiguration configuration, ILogger<DepartmentController> logger)
         {
             _logger = logger;
+            _configuration = configuration;
         }
 
         [HttpPut]
         public void Put(Parcel parcel)
         {
-            ParcelManager.UpdateParcel(parcel);
+            ParcelManager.UpdateParcel(parcel, _configuration);
         }
 
         [HttpGet("{departmentName}")]
         public IEnumerable<Parcel> Get(string departmentName)
         {
-            return ParcelManager.GetParcels(departmentName);
+            return ParcelManager.GetParcels(departmentName, _configuration);
         }
 
         [HttpDelete]
         public void Delete()
         {
-            ParcelManager.ResetAllParcels();
+            ParcelManager.DeleteAllParcels(_configuration);
         }
 
     }

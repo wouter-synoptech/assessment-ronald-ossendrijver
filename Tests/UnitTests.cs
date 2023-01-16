@@ -1,6 +1,5 @@
 using ParcelHandling.Server.Managers;
 using ParcelHandling.Shared;
-//using System.ComponentModel;
 using System.Xml.Serialization;
 
 namespace Tests
@@ -8,67 +7,6 @@ namespace Tests
     [TestClass]
     public class UnitTests
     {
-        public Dispatcher<Department> GetTestDispatcher()
-        {
-            var result = new Dispatcher<Department>();
-
-            var ruleNotHandled = new SimpleOrExpression();
-            ruleNotHandled.AddTerm(new SimpleEqualityCondition("Handled", false));
-
-            var ruleDepartmentA = new SimpleAndExpression();
-            var ruleDepartmentAPart1 = new SimpleOrExpression();
-            ruleDepartmentAPart1.AddTerm(new SimpleIntervalCondition("Weight", null, false, 1f, true));
-            var ruleDepartmentAPart2 = new SimpleOrExpression();
-            ruleDepartmentAPart2.AddTerm(new SimpleIntervalCondition("Value", 0f, true, 1000f, false));
-            ruleDepartmentAPart2.AddTerm(new SimpleEqualityCondition("Authorized", true));
-            ruleDepartmentA.AddTerm(ruleNotHandled);
-            ruleDepartmentA.AddTerm(ruleDepartmentAPart1);
-            ruleDepartmentA.AddTerm(ruleDepartmentAPart2);
-            var depAactions = new List<ParcelAction> { new ParcelAction() { Action = "Handle", Result = ParcelState.Handled } };
-            var depA = new Department() { Name = "A", Actions = depAactions };
-            result.AddDispatchRule(depA, ruleDepartmentA);
-
-            var ruleDepartmentB = new SimpleAndExpression();
-            var ruleDepartmentBPart1 = new SimpleOrExpression();
-            ruleDepartmentBPart1.AddTerm(new SimpleIntervalCondition("Weight", 1f, false, 10f, true));
-            var ruleDepartmentBPart2 = new SimpleOrExpression();
-            ruleDepartmentBPart2.AddTerm(new SimpleIntervalCondition("Value", 0f, true, 1000f, false));
-            ruleDepartmentBPart2.AddTerm(new SimpleEqualityCondition("Authorized", true));
-            ruleDepartmentB.AddTerm(ruleNotHandled);
-            ruleDepartmentB.AddTerm(ruleDepartmentBPart1);
-            ruleDepartmentB.AddTerm(ruleDepartmentBPart2);
-            var depBactions = new List<ParcelAction> { new ParcelAction() { Action = "Handle", Result = ParcelState.Handled } };
-            var depB = new Department() { Name = "B", Actions = depBactions };
-            result.AddDispatchRule(depB, ruleDepartmentB);
-
-            var ruleDepartmentC = new SimpleAndExpression();
-            var ruleDepartmentCPart1 = new SimpleOrExpression();
-            ruleDepartmentCPart1.AddTerm(new SimpleIntervalCondition("Weight", 10f, false, null, true));
-            var ruleDepartmentCPart2 = new SimpleOrExpression();
-            ruleDepartmentCPart2.AddTerm(new SimpleIntervalCondition("Value", 0f, true, 1000f, false));
-            ruleDepartmentCPart2.AddTerm(new SimpleEqualityCondition("Authorized", true));
-            ruleDepartmentC.AddTerm(ruleNotHandled);
-            ruleDepartmentC.AddTerm(ruleDepartmentCPart1);
-            ruleDepartmentC.AddTerm(ruleDepartmentCPart2);
-            var depCactions = new List<ParcelAction> { new ParcelAction() { Action = "Handle", Result = ParcelState.Handled } };
-            var depC = new Department() { Name = "C", Actions = depCactions };
-            result.AddDispatchRule(depC, ruleDepartmentC);
-
-            var ruleDepartmentF = new SimpleAndExpression();
-            var ruleDepartmentFPart1 = new SimpleOrExpression();
-            ruleDepartmentFPart1.AddTerm(new SimpleIntervalCondition("Value", 1000f, true, null, true));
-            var ruleDepartmentFPart2 = new SimpleOrExpression();
-            ruleDepartmentFPart2.AddTerm(new SimpleEqualityCondition("Authorized", false));
-            ruleDepartmentF.AddTerm(ruleNotHandled);
-            ruleDepartmentF.AddTerm(ruleDepartmentFPart1);
-            ruleDepartmentF.AddTerm(ruleDepartmentFPart2);
-            var depFactions = new List<ParcelAction> { new ParcelAction() { Action = "Authorize", Result = ParcelState.Authorized } };
-            var depF = new Department() { Name = "F", Actions = depFactions };
-            result.AddDispatchRule(depF, ruleDepartmentF);
-
-            return result;
-        }
-
         [TestMethod]
         public void TestDispatcher()
         {
@@ -99,12 +37,12 @@ namespace Tests
         [TestMethod]
         public void TestMixedRules()
         {
-            var rule = new SimpleAndExpression();
-            var rulePart1 = new SimpleOrExpression();
-            rulePart1.AddTerm(new SimpleIntervalCondition("Value", 1000f, true, float.MaxValue, true));
+            var rule = new AndExpression();
+            var rulePart1 = new OrExpression();
+            rulePart1.AddTerm(new IntervalCondition("Value", 1000f, true, float.MaxValue, true));
             rule.AddTerm(rulePart1);
-            var rulePart2 = new SimpleOrExpression();
-            rulePart2.AddTerm(new SimpleEqualityCondition("Authorized", false));
+            var rulePart2 = new OrExpression();
+            rulePart2.AddTerm(new EqualityCondition("Authorized", false));
             rule.AddTerm(rulePart2);
 
             var valuesToTestFalse1 = new Dictionary<string, object>() { ["Value"] = 1500f, ["Weight"] = 3f, ["Authorized"] = true };
@@ -119,7 +57,7 @@ namespace Tests
         [TestMethod]
         public void TestSimpleEqualityCondition()
         {
-            var condition = SimpleEqualityCondition.Parse("Test = 10");
+            var condition = EqualityCondition.Parse("Test = 10");
             var values1 = new Dictionary<string, object>() { ["Test"] = 10f };
             var values2 = new Dictionary<string, object>() { ["Test"] = 9f };
 
@@ -131,7 +69,7 @@ namespace Tests
         [TestMethod]
         public void TestIntervalParsing()
         {
-            var condition = SimpleIntervalCondition.Parse("Test in <9,10]");
+            var condition = IntervalCondition.Parse("Test in <9,10]");
             var values1 = new Dictionary<string, object>() { ["Test"] = 10f };
             var values2 = new Dictionary<string, object>() { ["Test"] = 9f };
             var values3 = new Dictionary<string, object>() { ["Test"] = 9.5f };
@@ -172,13 +110,8 @@ namespace Tests
                 {
                     var container = (Container?)serializer.Deserialize(sr);
 
-                    if (container != null)
+                    if (container != null && container.Parcels != null)
                     {
-                        Console.WriteLine($"Container {container.Id} - {container.ShippingDate}, #parcels: {container.Parcels.Count()}");
-                        foreach (var parcel in container.Parcels)
-                        {
-                            Console.WriteLine($"{parcel.Receipient} - {parcel.Weight} - {parcel.Value}");
-                        }
                         allParcels.AddRange(container.Parcels);
                     }
                 }
@@ -188,21 +121,80 @@ namespace Tests
         }
 
         [TestMethod]
-        public void GetParcels()
-        {
-            var department = DepartmentManager.GetDepartments().FirstOrDefault();
-            Assert.IsNotNull(department);
-
-            var parcelsOfDepartment = ParcelManager.GetParcels(department.Name);
-        }
-
-        [TestMethod]
         public void TestIntervals()
         {
             var a = new Interval(0, true, 10, false);
             Assert.IsTrue(a.Contains(5));
-            Assert.IsFalse(a.Contains(5f));
+            Assert.IsTrue(a.Contains(5f));
+            Assert.IsFalse(a.Contains(10f - 0.00001f));
+            Assert.IsFalse(a.Contains(10f));
+
+            var b = new Interval(0d, true, 10d, false);
+            Assert.IsTrue(b.Contains(5));
+            Assert.IsTrue(b.Contains(5f));
+            Assert.IsTrue(b.Contains(10d - 0.000000001d));
+            Assert.IsFalse(b.Contains(10f));
         }
 
+        private Dispatcher<Department> GetTestDispatcher()
+        {
+            var result = new Dispatcher<Department>();
+
+            var ruleNotHandled = new OrExpression();
+            ruleNotHandled.AddTerm(new EqualityCondition("Handled", false));
+
+            var ruleDepartmentA = new AndExpression();
+            var ruleDepartmentAPart1 = new OrExpression();
+            ruleDepartmentAPart1.AddTerm(new IntervalCondition("Weight", null, false, 1f, true));
+            var ruleDepartmentAPart2 = new OrExpression();
+            ruleDepartmentAPart2.AddTerm(new IntervalCondition("Value", 0f, true, 1000f, false));
+            ruleDepartmentAPart2.AddTerm(new EqualityCondition("Authorized", true));
+            ruleDepartmentA.AddTerm(ruleNotHandled);
+            ruleDepartmentA.AddTerm(ruleDepartmentAPart1);
+            ruleDepartmentA.AddTerm(ruleDepartmentAPart2);
+            var depAactions = new List<ParcelAction> { new ParcelAction() { Action = "Handle", Result = ParcelState.Handled } };
+            var depA = new Department() { Name = "A", Actions = depAactions };
+            result.AddDispatchRule(depA, ruleDepartmentA);
+
+            var ruleDepartmentB = new AndExpression();
+            var ruleDepartmentBPart1 = new OrExpression();
+            ruleDepartmentBPart1.AddTerm(new IntervalCondition("Weight", 1f, false, 10f, true));
+            var ruleDepartmentBPart2 = new OrExpression();
+            ruleDepartmentBPart2.AddTerm(new IntervalCondition("Value", 0f, true, 1000f, false));
+            ruleDepartmentBPart2.AddTerm(new EqualityCondition("Authorized", true));
+            ruleDepartmentB.AddTerm(ruleNotHandled);
+            ruleDepartmentB.AddTerm(ruleDepartmentBPart1);
+            ruleDepartmentB.AddTerm(ruleDepartmentBPart2);
+            var depBactions = new List<ParcelAction> { new ParcelAction() { Action = "Handle", Result = ParcelState.Handled } };
+            var depB = new Department() { Name = "B", Actions = depBactions };
+            result.AddDispatchRule(depB, ruleDepartmentB);
+
+            var ruleDepartmentC = new AndExpression();
+            var ruleDepartmentCPart1 = new OrExpression();
+            ruleDepartmentCPart1.AddTerm(new IntervalCondition("Weight", 10f, false, null, true));
+            var ruleDepartmentCPart2 = new OrExpression();
+            ruleDepartmentCPart2.AddTerm(new IntervalCondition("Value", 0f, true, 1000f, false));
+            ruleDepartmentCPart2.AddTerm(new EqualityCondition("Authorized", true));
+            ruleDepartmentC.AddTerm(ruleNotHandled);
+            ruleDepartmentC.AddTerm(ruleDepartmentCPart1);
+            ruleDepartmentC.AddTerm(ruleDepartmentCPart2);
+            var depCactions = new List<ParcelAction> { new ParcelAction() { Action = "Handle", Result = ParcelState.Handled } };
+            var depC = new Department() { Name = "C", Actions = depCactions };
+            result.AddDispatchRule(depC, ruleDepartmentC);
+
+            var ruleDepartmentF = new AndExpression();
+            var ruleDepartmentFPart1 = new OrExpression();
+            ruleDepartmentFPart1.AddTerm(new IntervalCondition("Value", 1000f, true, null, true));
+            var ruleDepartmentFPart2 = new OrExpression();
+            ruleDepartmentFPart2.AddTerm(new EqualityCondition("Authorized", false));
+            ruleDepartmentF.AddTerm(ruleNotHandled);
+            ruleDepartmentF.AddTerm(ruleDepartmentFPart1);
+            ruleDepartmentF.AddTerm(ruleDepartmentFPart2);
+            var depFactions = new List<ParcelAction> { new ParcelAction() { Action = "Authorize", Result = ParcelState.Authorized } };
+            var depF = new Department() { Name = "F", Actions = depFactions };
+            result.AddDispatchRule(depF, ruleDepartmentF);
+
+            return result;
+        }
     }
 }

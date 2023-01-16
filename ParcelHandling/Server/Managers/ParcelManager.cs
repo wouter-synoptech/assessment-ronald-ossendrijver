@@ -6,59 +6,86 @@ namespace ParcelHandling.Server.Managers
 {
     public static class ParcelManager
     {
-        public static void CheckForNewContainers()
+        /// <summary>
+        /// Checks if there are any unhandled containers and if so extracts all parcels from those containers.
+        /// </summary>
+        public static void CheckAndHandleNewContainers(IConfiguration configuration)
         {
-            int parcelId = 0;
-            var serializer = new XmlSerializer(typeof(Container));
+            var containerFolder = configuration?["ContainerFolder"];
 
-            Directory.CreateDirectory("./Containers");
-            Directory.CreateDirectory("./Parcels");
+            if (containerFolder == null) throw new ArgumentException("Container folder not configured");
 
-            foreach (var containerFile in Directory.GetFiles("./Containers"))
+            var parcelFolder = configuration?["ParcelFolder"];
+
+            if (parcelFolder == null) throw new ArgumentException("Parcel folder not configured");
+
+            Directory.CreateDirectory(containerFolder);
+            Directory.CreateDirectory(parcelFolder);
+
+            foreach (var containerFile in Directory.GetFiles(containerFolder))
             {
-                using (StreamReader sr = new(containerFile))
+                ReadContainer(containerFile, parcelFolder);
+            }
+        }
+
+        private static void ReadContainer(string containerFile, string parcelFolder)
+        {
+            using (StreamReader sr = new(containerFile))
+            {
+                var serializer = new XmlSerializer(typeof(Container));
+                var container = (Container?)serializer.Deserialize(sr);
+
+                if (container != null)
                 {
-                    var container = (Container?)serializer.Deserialize(sr);
+                    var containerfile = $"{parcelFolder}/container_{container.Id}.json";
 
-                    if (container != null)
+                    if (!File.Exists(containerfile))
                     {
-                        var containerfile = $"./Parcels/container_{container.Id}.json";
-
-                        if (!File.Exists(containerfile))
-                        {
-                            File.WriteAllText(containerfile, JsonSerializer.Serialize(container));
-
-                            if (container.Parcels != null)
-                            {
-                                foreach (var parcel in container.Parcels)
-                                {
-                                    parcel.Id = container.Id + "-" + parcelId++;
-                                    parcel.State = ParcelState.NewAndUnauthorized;
-
-                                    var parcelfile = $"./Parcels/parcel_{parcel.Id}.json";
-                                    File.WriteAllText(parcelfile, JsonSerializer.Serialize(parcel));
-                                }
-                            }
-                        }
+                        File.WriteAllText(containerfile, JsonSerializer.Serialize(container));
+                        ExtractParcelsFromContainer(container, parcelFolder);
                     }
                 }
             }
         }
 
-        public static IEnumerable<Parcel> GetParcels(string departmentName)
+        private static void ExtractParcelsFromContainer(Container container, string parcelFolder)
         {
+            int parcelId = 0;
+            if (container.Parcels != null)
+            {
+                foreach (var parcel in container.Parcels)
+                {
+                    parcel.Id = container.Id + "-" + parcelId++;
+                    parcel.State = ParcelState.NewAndUnauthorized;
+
+                    var parcelfile = $"{parcelFolder}/parcel_{parcel.Id}.json";
+                    File.WriteAllText(parcelfile, JsonSerializer.Serialize(parcel));
+                }
+            }
+        }
+
+        public static IEnumerable<Parcel> GetParcels(string departmentName, IConfiguration configuration)
+        {
+            var departmentConfig = configuration?["DepartmentConfig"];
+            if (departmentConfig == null) throw new ArgumentException("Department definition file not configured");
+            if (!File.Exists(departmentConfig)) throw new ArgumentException("Departments not defined");
+
+            var parcelFolder = configuration?["ParcelFolder"];
+
+            if (parcelFolder == null) throw new ArgumentException("Parcel folder not configured");
+
             var result = new List<Parcel>();
 
-            using (StreamReader departmentFile = new("departmentconfig.txt"))
+            using (StreamReader departmentFile = new(departmentConfig))
             {
                 var dispatcher = DepartmentManager.Create(departmentFile);
                 var department = dispatcher.Targets.FirstOrDefault(dept => dept.Name == departmentName);
 
                 if (department != null)
                 {
-                    CheckForNewContainers();
+                    CheckAndHandleNewContainers(configuration);
 
-                    foreach (var parcelfile in Directory.GetFiles("./Parcels", "parcel*"))
+                    foreach (var parcelfile in Directory.GetFiles(parcelFolder, "parcel*"))
                     {
                         var parcel = JsonSerializer.Deserialize<Parcel>(File.ReadAllText(parcelfile));
 
@@ -73,37 +100,21 @@ namespace ParcelHandling.Server.Managers
             return result;
         }
 
-        public static Parcel? GetParcel(string parcelId)
+        public static void UpdateParcel(Parcel parcel, IConfiguration configuration)
         {
-            var parcelfile = $"./Parcels/parcel_{parcelId}.json";
-            if (File.Exists(parcelfile))
-            {
-                return JsonSerializer.Deserialize<Parcel>(parcelfile);
-            }
+            var parcelFolder = configuration?["ParcelFolder"];
+            if (parcelFolder == null) throw new ArgumentException("Parcel folder not configured");
 
-            return null;
-        }
-
-        /*
-        public static void UpdateParcel(string parcelId, ParcelState state)
-        {
-            var parcel = GetParcel(parcelId);
-            if (parcel != null)
-            {
-                UpdateParcel(parcel, state);
-            }
-        }
-        */
-
-        public static void UpdateParcel(Parcel parcel)
-        {
-            var parcelfile = $"./Parcels/parcel_{parcel.Id}.json";
+            var parcelfile = $"{parcelFolder}/parcel_{parcel.Id}.json";
             File.WriteAllText(parcelfile, JsonSerializer.Serialize(parcel));
         }
 
-        public static void ResetAllParcels()
+        public static void DeleteAllParcels(IConfiguration configuration)
         {
-            foreach (var filename in Directory.GetFiles("./Parcels"))
+            var parcelFolder = configuration?["ParcelFolder"];
+            if (parcelFolder == null) throw new ArgumentException("Parcel folder not configured");
+
+            foreach (var filename in Directory.GetFiles(parcelFolder))
             {
                 File.Delete(filename);
             }
