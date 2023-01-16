@@ -11,6 +11,10 @@
             <img src="parcel.png" height="50" class="card-img-top" alt="Parcel">
         </a>
 
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
 
@@ -72,7 +76,7 @@
 
 @code {
 
-    private Department[]? _departments;
+    private Department[] _departments = Array.Empty<Department>();
     private Department? _currentDepartment;
     private IEnumerable<Parcel>? _parcelsOfCurrentDepartment;
 
@@ -80,7 +84,11 @@
     {
         try
         {
-            _departments = await Http.GetFromJsonAsync<Department[]>("Department");
+            var departments = await Http.GetFromJsonAsync<Department[]>("Department");
+            if (departments != null)
+            {
+                _departments = departments;
+            }
         }
         catch (Exception)
         {
