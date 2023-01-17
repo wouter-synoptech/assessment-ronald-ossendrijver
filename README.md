@@ -3,7 +3,7 @@
 ## The functionality of the system
 The system works as follows:
 * It handles all parcel container xml files that are placed in the Container folder on the server. 
-* Parcels will be assigned to Departments based on the Department definition file (departmentconfig.txt) on the server. The syntax of this definition is explained below. This definition also tells the system which actions a Department can perform on a parcel.
+* Parcels will be assigned to departments by means of a simple rules/workflow engine based on the Department definition file (departmentconfig.txt) on the server. The syntax of this definition is explained below. This definition also tells the system which actions a Department can perform on a parcel.
 * Performing an action (like Authorize or Handle) in the user interface will change the state of the parcel accordingly.
 * For demo purposes, the state of each parcel can be reset from the user interface after which any containers will be unpacked from scratch.
 * The locations of the department configuration file and the Container and Parcel folders are configured in the appSettings.
