@@ -1,11 +1,12 @@
 # assessment-ronald-ossendrijver
 
 ## The functionality of the system
-The system basically works as follows:
-* It will handle all parcel container xml files that are placed in the Container folder on the server. 
-* Parcels will be assigned to Departments based on the Department definition file (departmentconfig.txt) on the server. The syntax of this definition is explained below. This definition also tells the system which actions a Department can perform on a parcel.
+The system works as follows:
+* It handles all parcel container xml files that are placed in the Container folder on the server. 
+* Parcels will be assigned to departments by means of a simple rules/workflow engine based on the Department definition file (departmentconfig.txt) on the server. The syntax of this definition is explained below. This definition also tells the system which actions a Department can perform on a parcel.
 * Performing an action (like Authorize or Handle) in the user interface will change the state of the parcel accordingly.
 * For demo purposes, the state of each parcel can be reset from the user interface after which any containers will be unpacked from scratch.
+* The locations of the department configuration file and the Container and Parcel folders are configured in the appSettings.
 
 ## Technical info
 The system is implemented in .NET 7. The simple UI is written in Blazor Webassembly and retrieves data from the Server using Web API (ASP.NET MVC). It is deployed as an Azure Web App.
