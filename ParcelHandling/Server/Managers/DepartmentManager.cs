@@ -9,11 +9,12 @@ namespace ParcelHandling.Server.Managers
         /// Creates a basic Dispatcher for parcels to departments based on a simple ruleset.
         /// 
         /// The read stream contains one of more departments, and for each department the expected format is as follows:
-        /// the first line contains a Department name.
-        /// The second line specifies zero or more actions the department can perform on a parcel and what the resulting parcel state will be.
-        /// The next zero or more lines each contain expressions a parcel should ALL comply with to be assigned to the Department. Each line contains 
-        /// one or more conditions of which any one should me met. These conditions state that some characteristic of the parcel (like Weight) should be 
-        /// within some interval or should be equal to an exact value.
+        /// - The first line contains a Department name.
+        /// - The second line specifies zero or more actions the department can perform on a parcel and what the resulting parcel state will be.
+        /// - The next zero or more lines each contain expressions a parcel should ALL comply with to be assigned to the Department. Each line contains 
+        ///   one or more conditions of which any one should me met. These conditions state that some characteristic of the parcel (like Weight) should be 
+        ///   within some interval or should be equal to an exact value.
+        /// - An empty line marks the end the definition of the department.
         /// 
         /// Example:
         /// 
@@ -21,6 +22,7 @@ namespace ParcelHandling.Server.Managers
         /// Handle Package -> Handled, Scrap a Package -> Handled
         /// Value in <*, 1000] or Weight in [10,*> 
         /// Handled = false
+        /// 
         /// </summary>
         /// <param name="reader">The TextReader that contains a definition of Department and Handling rules.</param>
         /// <returns>A SimpleDepartmentDispatcher</returns>
@@ -36,7 +38,7 @@ namespace ParcelHandling.Server.Managers
                 {
                     var dept = new Department() { Name = read };
                     dept.Actions.AddRange(ReadActions(reader));
-                    result.AddDispatchRule(dept, ReadDispatchRules(reader));
+                    result.AddDispatchRule(dept, ReadDispatchRule(reader));
                 }
 
                 return result;
@@ -47,7 +49,7 @@ namespace ParcelHandling.Server.Managers
             }
         }
 
-        private static IExpression ReadDispatchRules(TextReader reader)
+        private static AndExpression ReadDispatchRule(TextReader reader)
         {
             var result = new AndExpression();
 

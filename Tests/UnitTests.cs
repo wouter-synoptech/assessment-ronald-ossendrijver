@@ -85,13 +85,17 @@ namespace Tests
         [TestMethod]
         public void SaveAndLoadTestDepartments()
         {
-            using StreamWriter file1 = new("departmentconfig.txt");
-            var departmentsIn = GetTestDispatcher();
-            DepartmentManager.Save(file1, departmentsIn);
+            using (StreamWriter file1 = new("departmentconfig.txt"))
+            {
+                var departmentsIn = GetTestDispatcher();
+                DepartmentManager.Save(file1, departmentsIn);
+            }
 
-            using StreamReader file2 = new("departmentconfig.txt");
-            var departmentsOut = DepartmentManager.Create(file2);
-            Assert.AreEqual(4, departmentsOut.Targets.Count());
+            using (StreamReader file2 = new("departmentconfig.txt"))
+            {
+                var departmentsOut = DepartmentManager.Create(file2);
+                Assert.AreEqual(4, departmentsOut.Targets.Count());
+            }
         }
 
         [TestMethod]
