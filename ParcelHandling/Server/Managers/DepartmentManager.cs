@@ -127,6 +127,12 @@ namespace ParcelHandling.Server.Managers
             }
         }
 
+        /// <summary>
+        /// Gets all configured Departments
+        /// </summary>
+        /// <param name="configuration"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException"></exception>
         public static IEnumerable<Department> GetDepartments(IConfiguration configuration)
         {
             var departmentConfigFilename = AppManager.GetConfiguredPath(configuration, "DepartmentConfig");

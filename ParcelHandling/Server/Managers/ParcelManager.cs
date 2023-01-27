@@ -57,6 +57,12 @@ namespace ParcelHandling.Server.Managers
             }
         }
 
+        /// <summary>
+        /// Gets all Parcels assigned to the given Department
+        /// </summary>
+        /// <param name="departmentName">The name of the Department</param>
+        /// <param name="configuration">The configuration that determines where to obtain parcels from</param>
+        /// <returns></returns>
         public static IEnumerable<Parcel> GetParcels(string departmentName, IConfiguration configuration)
         {
             var result = new List<Parcel>();
@@ -89,6 +95,11 @@ namespace ParcelHandling.Server.Managers
             return result;
         }
 
+        /// <summary>
+        /// Updates information about a parcel
+        /// </summary>
+        /// <param name="parcel"></param>
+        /// <param name="configuration"></param>
         public static void UpdateParcel(Parcel parcel, IConfiguration configuration)
         {
             var parcelFolder = AppManager.GetConfiguredPath(configuration, "ParcelFolder");
@@ -96,6 +107,10 @@ namespace ParcelHandling.Server.Managers
             File.WriteAllText(parcelfile, JsonSerializer.Serialize(parcel));
         }
 
+        /// <summary>
+        /// Removes all parcels from the system (for demo purposes only - should be removed in Production)
+        /// </summary>
+        /// <param name="configuration"></param>
         public static void DeleteAllParcels(IConfiguration configuration)
         {
             var parcelFolder = AppManager.GetConfiguredPath(configuration, "ParcelFolder");
@@ -104,7 +119,5 @@ namespace ParcelHandling.Server.Managers
                 File.Delete(filename);
             }
         }
-
-
     }
 }
